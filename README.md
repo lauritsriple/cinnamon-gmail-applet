@@ -10,3 +10,11 @@ sudo pip3 install feedparser
 sudo pip3 install keyrings
 sudo pip3 install keyrings-alt
 ```
+
+## Install from git
+```
+cd ~/.local/share/cinnamon/applets
+git clone https://github.com/lauritsriple/cinnamon-gmail-applet.git gmail@lauritsriple
+```
+## Install from spices
+Currently not on spices. Will add later so that it is easiere to install
