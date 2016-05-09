@@ -28,8 +28,8 @@ def feedToJson(feed):
         #Split summary over multiple lines
         if len(elem["summary"])>50:
             tmpSummary=elem["summary"].split()
-            summary=""
             charCount=0
+            summary=""
             for word in tmpSummary:
                 summary+=word+" "
                 charCount+=len(word)
@@ -38,7 +38,9 @@ def feedToJson(feed):
                     charCount=0
             summary=summary.rstrip()
             summary+="..."
-        tmp["summary"]=summary
+            tmp["summary"]=summary
+        else:
+            tmp["summary"]=elem["summary"]
         tmp["link"]=elem["link"]
         tmp["time"]=elem["published"]
         result["entries"].append(tmp)
@@ -70,4 +72,6 @@ def main():
         print(feedToJson(getFeed(url)))
     except:
         print("null")
+
+        else:
 main()
