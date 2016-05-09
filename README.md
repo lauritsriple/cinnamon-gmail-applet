@@ -17,4 +17,8 @@ cd ~/.local/share/cinnamon/applets
 git clone https://github.com/lauritsriple/cinnamon-gmail-applet.git gmail@lauritsriple
 ```
 ## Install from spices
-Currently not on spices. Will add later so that it is easiere to install
+You can install this from spices. Just click availible applets (online) and serach for gmail. There is currently two applets with almost the same name so make sure you choose the one which has gmail@lauritsriple. I tried to get the other one to work, but i couldn't and i didn't like that it stored password in plain text.
+
+## TODO
+* Add notifications when receiving new mail
+* Lit panel icon on new mail
