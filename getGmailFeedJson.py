@@ -17,15 +17,34 @@ def feedToJson(feed):
     result["entries"]=[]
     for elem in feed["entries"]:
         tmp={}
-        tmp["author"]=  elem["author_detail"]["name"]
-        tmp["summary"]= elem["summary"]
-        tmp["title"]=   elem["title"]
-        for key,item in tmp.items():
-            if len(item)>40:
-                tmp[key]=item[0:40]+"..."
-        tmp["link"]=    elem["link"]
-        tmp["time"]=    elem["published"]
+        tmp["author"]=elem["author_detail"]["name"]
+        tmp["email"]=elem["author_detail"]["email"]
+        #Shorten title
+        if len(elem["title"])>60:
+            tmp["title"]=elem["title"][0:57]
+            tmp["title"]+="..."
+        else:
+            tmp["title"]=elem["title"]
+        #Split summary over multiple lines
+        if len(elem["summary"])>50:
+            tmpSummary=elem["summary"].split()
+            summary=""
+            charCount=0
+            for word in tmpSummary:
+                summary+=word+" "
+                charCount+=len(word)
+                if charCount>40:
+                    summary+="\n"
+                    charCount=0
+            summary=summary.rstrip()
+            summary+="..."
+        tmp["summary"]=summary
+        tmp["link"]=elem["link"]
+        tmp["time"]=elem["published"]
         result["entries"].append(tmp)
+    #Reverse result so that newest mail is last.
+    result["entries"].reverse()
+
     return json.dumps(result)
 
 def getFeed(url):
@@ -51,5 +70,4 @@ def main():
         print(feedToJson(getFeed(url)))
     except:
         print("null")
-
 main()

@@ -18,18 +18,20 @@ function MailItem() {
 MailItem.prototype = {
     __proto__: PopupMenu.PopupBaseMenuItem.prototype,
 
-    _init: function(title,author,summary,link) {
+    _init: function(title,author,email,summary,link) {
         PopupMenu.PopupBaseMenuItem.prototype._init.call(this, { reactive: true ,hover:false});
 
 	this.link=link
         this._box = new St.BoxLayout({ style_class: 'popup-device-menu-item' });
         this._vbox = new St.BoxLayout({ style_class: 'popup-device-menu-item', vertical: true});
 
-        this.label = new St.Label({ text: "%s --> %s".format(author,title) });
+        this.label = new St.Label({ text: "%s".format(title) });
+        let testlabel = new St.Label({ text: "%s (%s)".format(author,email) ,style_class:'popup-inactive-menu-item'});
         let statusLabel = new St.Label({ text: "%s".format(summary), style_class: 'popup-inactive-menu-item' });
 
         this._box.add_actor(this.label);
         this._vbox.add_actor(this._box);
+	this._vbox.add_actor(testlabel);
         this._vbox.add_actor(statusLabel);
 
         this.addActor(this._vbox);
@@ -133,9 +135,9 @@ MyApplet.prototype = {
 		this.set_applet_tooltip("Something went wrong");
 		this.set_applet_label("?");
 		this.set_applet_icon_symbolic_name('mail-read-symbolic');
-		let item = new MailItem("Install python libaries from terminal","How To","You need pip3, 'sudo apt-get install pip3'\n\rYou need python-feedparser, 'sudo pip3 install feedparser'\n\rYou need python keyring and python keyring-alt, 'sudo pip3 install keyrings' and 'sudo pip3 install keyrings-alt'");
+		let item = new MailItem("Install python libaries from terminal","How To","guide","You need pip3, 'sudo apt-get install pip3'\nYou need python-feedparser, 'sudo pip3 install feedparser'\nYou need python keyring and python keyring-alt, 'sudo pip3 install keyrings' and 'sudo pip3 install keyrings-alt'");
 		this.menu.addMenuItem(item,0);
-		item = new MailItem("Could not get json from python","ERROR","Check internet conneciton\n\rInstall the needed python libaries\n\rConfigure password correctly");
+		item = new MailItem("Could not get json from python","ERROR","ERROR","Check internet conneciton\nInstall the needed python libaries\nConfigure password correctly");
 		this.menu.addMenuItem(item,0);
 		return;
 	}
@@ -154,7 +156,7 @@ MyApplet.prototype = {
 		this.set_applet_label("0");
         	this.set_applet_tooltip("No new mail");
 		this.set_applet_icon_symbolic_name('mail-read-symbolic');
-		let item = new MailItem("Have a nice day","No new mails","");
+		let item = new MailItem("No new mails","Have a nice day"," ͡° ͜ʖ ͡°","","");
 		this.menu.addMenuItem(item,0);
 		return;
 	}
@@ -164,7 +166,11 @@ MyApplet.prototype = {
 	this.menu.removeAll();
 	var pos=0;
 	for each (var mail in data.entries){
-		let item = new MailItem(mail.title,mail.author,mail.summary,mail.link);
+		if (pos>10){
+			//Dont show more than this number of unread mails
+			break
+		}
+		let item = new MailItem(mail.title,mail.author,mail.email,mail.summary,mail.link);
 		item.connect('activate',Lang.bind(this, this.launchClient));
 		this.menu.addMenuItem(item,0);
 		this.menuItems[pos]=item;
