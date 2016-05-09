@@ -72,6 +72,4 @@ def main():
         print(feedToJson(getFeed(url)))
     except:
         print("null")
-
-        else:
 main()
