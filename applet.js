@@ -179,17 +179,21 @@ MyApplet.prototype = {
 	//Create the dropdown menu
 	this.menuItems={};
 	this.menu.removeAll();
-	var pos=0;
-	for each (var mail in data.entries){
-		if (pos>10){
-			//Dont show more than this number of unread mails
-			break
-		}
+	var numMailsToShowInPopup=10;
+	if (data.entries.length<numMailsToShowInPopup){
+		numMailsToShowInPopup=data.entries.length;
+	}
+	var index=0;
+	this.logger.debug("Before loop");
+	for(var i = data.entries.length-numMailsToShowInPopup; i<data.entries.length;++i){
+		this.logger.debug("inside loop");
+		var mail = data.entries[i];
 		let item = new MailItem(mail.title,mail.author,mail.email,mail.summary,mail.link);
 		item.connect('activate',Lang.bind(this, this.launchClient));
 		this.menu.addMenuItem(item,0);
-		this.menuItems[pos]=item;
-		pos=pos+1;
+		this.menuItems[index]=item;
+		index=index++;
+		//pos=pos-1;
 	}
     },
 
