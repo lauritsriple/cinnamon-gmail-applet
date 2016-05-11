@@ -59,6 +59,9 @@ MyApplet.prototype = {
 	this.getJsonFeedTimeout=0;
 	this.timerId=0;
         this.metadata = metadata;
+	this.numUnread=0;
+	
+	//Settings
         this.settings = new Settings.AppletSettings(this, metadata.uuid, instanceId);
 	this.settings.bindProperty(Settings.BindingDirection.IN,
 			"settings-username",
@@ -70,6 +73,7 @@ MyApplet.prototype = {
 			"password",
 			this.on_settings_changed,
 			null);
+	//Set old username to the username in the config
 	this.oldUsername=this.username
 
 	//Enable logger
@@ -96,9 +100,7 @@ MyApplet.prototype = {
         //this.menu.addSettingsAction(_("Power Settings"), 'power');
 
 	//Init functions
-	this.logger.debug("Starting getjsonfeed from init");
 	this.getJsonFeed();
-	this.logger.debug("Starting ticker from init");
 	this.ticker();
 
     },
@@ -129,7 +131,6 @@ MyApplet.prototype = {
     processJsonFeed: function(response){
     	let data=JSON.parse(response);
 	this.logger.debug("ProcessJsonFeed is called");
-	this.logger.debug("Response:"+response);
 	if (data==null){
 		this.menu.removeAll();
 		this.set_applet_tooltip("Something went wrong");
@@ -142,9 +143,23 @@ MyApplet.prototype = {
 		return;
 	}
 	//Get number of unread, and set icon and tooltip accordingly
-	var num=parseInt(data.unreadCount,10);
-	if (num>0){
-		if (num<2){
+	var numUnreadInFeed=parseInt(data.unreadCount,10);
+
+	//How many of the mails in the feed is actually new from last time we checked?
+	var numMailsToShowNotification=numUnreadInFeed-this.numUnread;
+	if (numMailsToShowNotification>3){
+		numMailsToShowNotification=3;
+	}
+	this.numUnread=numUnreadInFeed;
+
+	//Show notifcations
+	for (var i = data.entries.length-1; i>=(data.entries.length-numMailsToShowNotification); --i){
+		Util.spawnCommandLine("notify-send --icon=mail-unread \""+data.entries[i].author+"\" \""+data.entries[i].title+"\"");
+	}
+
+	//Set applet icon and tooltip
+	if (numUnreadInFeed>0){
+		if (numUnreadInFeed<2){
         		this.set_applet_tooltip("New mail");
 		} else{
 			this.set_applet_tooltip("New mails");
@@ -161,7 +176,7 @@ MyApplet.prototype = {
 		return;
 	}
 
-	//Fill the menu with most recent mails
+	//Create the dropdown menu
 	this.menuItems={};
 	this.menu.removeAll();
 	var pos=0;
