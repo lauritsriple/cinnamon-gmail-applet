@@ -60,7 +60,7 @@ MyApplet.prototype = {
 	this.timerId=0;
         this.metadata = metadata;
 	this.numUnread=0;
-	
+
 	//Settings
         this.settings = new Settings.AppletSettings(this, metadata.uuid, instanceId);
 	this.settings.bindProperty(Settings.BindingDirection.IN,

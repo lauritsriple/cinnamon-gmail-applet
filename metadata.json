@@ -1,5 +1,6 @@
 {
- "uuid": "gmail@lauritsriple",
- "name": "GmailNotifier",
- "description": "Shows most recent mails, and how many unread messages you have."
+    "dangerous": false,
+    "description": "Shows number of unread mails, and extract of unread mails.",
+    "uuid": "gmail@lauritsriple",
+    "name": "GmailNotifier"
 }
