@@ -1,11 +1,30 @@
 #!/usr/bin/env python
 
-from urllib.request import FancyURLopener
-import feedparser
-#import usersettings
-import json
+try:
+    import json
+except:
+    print("Python can't import json. Should be builtin in python. Go search the web or create a issue on git")
+    exit()
+
+try:
+    from urllib.request import FancyURLopener
+except:
+    print(json.dumps({"error":"Python can't import FancyURLopener from urllib.request","info":"Search the web or create issue on git"}))
+    exit()
+
+try:
+    import feedparser
+except:
+    print(json.dumps({"error":"Python can't import feedparser libary","info":"'pip3 install feedparser' to fix"}))
+    exit()
+
+try:
+    import keyring
+except:
+    print(json.dumps({"error":"Python can't import keyring libary","info":"'pip3 install keyring' and 'pip3 install keyrings-alt' to fix"}))
+    exit()
+
 import sys
-import keyring
 import time
 
 def feedToJson(feed):
@@ -46,7 +65,6 @@ def feedToJson(feed):
         result["entries"].append(tmp)
     #Reverse result so that newest mail is last.
     result["entries"].reverse()
-
     return json.dumps(result)
 
 def getFeed(url):
@@ -65,11 +83,20 @@ def printElemInFeed(feed):
         break
 
 def main():
-    username=sys.argv[1]
+    try:
+        username=sys.argv[1]
+    except:
+        print(json.dumps({"error":"Username has to be specified as parameter","info":"Try 'python3 getGamilFeedJson.py usernameongoogle'"}))
+        exit()
     try:
         password=keyring.get_password("mailnotifier",username)
-        url = 'https://%s:%s@mail.google.com/mail/feed/atom' % (username, password)
-        print(feedToJson(getFeed(url)))
     except:
-        print("null")
+        print(json.dumps({"error":"Could not get password from keyring","info":"Check settings for applet"}))
+        exit()
+    url = 'https://%s:%s@mail.google.com/mail/feed/atom' % (username, password)
+    feed=getFeed(url)
+    try:
+        print(feedToJson(feed))
+    except:
+        print(json.dumps({"error":"Feed could not be parsed correctly","info":"Check out the git repo"}))
 main()
